@@ -1,0 +1,14 @@
+{
+  "name": "grafana-postgresql-datasource",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Shirish Kamath",
+  "dependencies": {
+    "any-db": "^2.1.0",
+    "any-db-postgres": "^2.1.4",
+    "glob": "^7.0.5",
+    "map-async": "^0.1.1",
+    "restify": "^4.1.1"
+  }
+}
