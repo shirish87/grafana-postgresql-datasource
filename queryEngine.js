@@ -1,6 +1,7 @@
 'use strict';
 
 let runQuery = require('./sql').runQuery;
+let runQueryCached = require('./sqlCached').runQuery;
 let mapAsync = require('map-async');
 let glob = require('glob');
 let queryProviders = glob.sync('queryProviders/*.js').map(f => require('./' + f));
@@ -17,7 +18,7 @@ allTargets.sort();
 
 module.exports.targets = allTargets;
 
-function loadDataProvider(dataProvider) {
+function loadDataProvider(dataProvider, cached) {
   return function loadData(argList, callback) {
     let dataset = [];
     let datasetIndex = {};
@@ -25,7 +26,8 @@ function loadDataProvider(dataProvider) {
       datasetIndex[target] = dataset.push({ target: target, datapoints: [] }) - 1;
     });
 
-    runQuery(dataProvider.query, argList, (err, results) => {
+    let runQueryFn = cached ? runQueryCached : runQuery;
+    runQueryFn(dataProvider.query, argList, (err, results) => {
       if (err) {
         return callback(err);
       }
@@ -45,11 +47,12 @@ function loadDataProvider(dataProvider) {
   };
 }
 
-module.exports.run = (targets, params, callback) => {
+module.exports.run = (targets, params, cached, callback) => {
   if (typeof targets === 'string') {
     targets = queryProviders.filter((qp) => qp.name === targets).pop().targets;
   } else if (!Array.isArray(targets)) {
-    callback = params;
+    callback = cached;
+    cached = params;
     params = targets;
     targets = allTargets;
   }
@@ -73,7 +76,7 @@ module.exports.run = (targets, params, callback) => {
   });
 
   mapAsync(dataProviders, (provider, next) => {
-    provider.run(loadDataProvider(provider), params, next);
+    provider.run(loadDataProvider(provider, cached), params, next);
   }, (err, results) => {
     if (err) {
       return callback(err);

@@ -9,6 +9,7 @@
     "any-db-postgres": "^2.1.4",
     "glob": "^7.0.5",
     "map-async": "^0.1.1",
+    "node-cache": "^3.2.1",
     "restify": "^4.1.1"
   }
 }

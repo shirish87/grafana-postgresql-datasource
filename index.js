@@ -31,7 +31,7 @@ app.post('/query', (req, res) => {
     rangeStart: rStart,
     rangeEnd: rEnd,
     limit: limit
-  }, (err, dataset) => {
+  }, true, (err, dataset) => {
     if (err) {
       console.error('error loading data', err);
     }
